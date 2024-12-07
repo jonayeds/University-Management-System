@@ -9,5 +9,14 @@ const academicFacultySchema = new Schema<IAcademicFaculty>({
     }
 },{timestamps:true})
 
+academicFacultySchema.pre("findOneAndUpdate", async function(next){
+    const facultyId  = this.getQuery()
+    const isFacultyExist = await AcademicFaculty.findOne({_id:facultyId})
+    if(!isFacultyExist){
+        throw new Error("Academic Faculty does not exist")
+    }
+    next()
+})
+
 export const AcademicFaculty = model<IAcademicFaculty>("AcademicFaculty", academicFacultySchema)
 
