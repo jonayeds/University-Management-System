@@ -91,24 +91,24 @@ const studentSchema = new Schema<TStudent, StudentModel>({
   admissionSemester:{
     type:Schema.Types.ObjectId,
     ref:"AcademicSemester",
+  },
+  academicDepartment:{
+    type:Schema.Types.ObjectId,
+    ref:"AcademicDepartment"
   }
 },
 
 {
   toJSON:{
     virtuals:true
-  }
+  },
+  timestamps:true
 });
 
 // mongoose virtual
 studentSchema.virtual("fullName").get(function(){
   return this.name.firstName+this.name.middleName+this.name.lastName
 })
-
-
-
-
-
 
 
 

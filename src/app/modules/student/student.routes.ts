@@ -3,6 +3,6 @@ import { studentControllers } from './student.controller';
 export const StudentRoutes = express.Router();
 
 // will call the controllers
-StudentRoutes.get('/students', studentControllers.getAllStudents);
-StudentRoutes.get('/student/:studentId', studentControllers.getASingleStudent);
+StudentRoutes.get('/', studentControllers.getAllStudents);
+StudentRoutes.get('/:studentId', studentControllers.getASingleStudent);
 StudentRoutes.delete("/:studentId",studentControllers.deleteAStudent)

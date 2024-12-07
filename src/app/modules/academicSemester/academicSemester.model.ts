@@ -41,6 +41,15 @@ academicSemesterSchema.pre("save", async function(next){
     next()
 })
 
+academicSemesterSchema.pre("findOneAndUpdate", async function(next){
+    const semesterId  = this.getQuery()
+    const isFacultyExist = await AcademicSemester.findOne({_id:semesterId})
+    if(!isFacultyExist){
+        throw new Error("Academic Faculty does not exist")
+    }
+    next()
+})
+
 
 
 export const AcademicSemester = model<IAcademicSemester>("AcademicSemester", academicSemesterSchema) 
