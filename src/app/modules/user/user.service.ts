@@ -59,7 +59,7 @@ const crateStudentIntoDB = async (password:string , payload: TStudent) => {
 } catch(err){
     await session.abortTransaction()
     await session.endSession()
-    return null
+    throw new AppError(400, "Failed to create student")
 }   
 
    

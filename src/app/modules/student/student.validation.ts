@@ -14,6 +14,21 @@ const userNameValidationSchema = z.object({
     .min(1, { message: 'Last name is required.' })
     .regex(/^[a-zA-Z]+$/, { message: 'Last name must only contain alphabetic characters.' }),
 });
+const updateUserNameValidationSchema = z.object({
+  firstName: z
+    .string()
+    .trim()
+    .min(1, { message: 'First name is required.' })
+    .regex(/^[A-Z][a-z]+$/, { message: 'First name must start with an uppercase letter and the rest lowercase.' })
+    .optional(),
+  middleName: z.string().trim().optional(),
+  lastName: z
+    .string()
+    .trim()
+    .min(1, { message: 'Last name is required.' })
+    .regex(/^[a-zA-Z]+$/, { message: 'Last name must only contain alphabetic characters.' })
+    .optional(),
+});
 
 // Guardian Schema
 const guardianValidationSchema = z.object({
@@ -93,7 +108,51 @@ const createStudentValidationSchema = z.object({
     })
   })
 });
+const updateStudentValidationSchema = z.object({
+  body: z.object({
+    student: z.object({
+  name: updateUserNameValidationSchema.optional(),
+  gender: z
+    .enum(['Male', 'Female'], { errorMap: () => ({ message: 'Gender must be either "Male" or "Female".' }) }).optional(),
+  dateOfBirth: z
+    .string()
+    .optional(),
+  email: z
+    .string()
+    .trim()
+    .email({ message: 'Email must be a valid email address.' }).optional(),
+  contactNumber: z
+    .string()
+    .trim()
+    .regex(/^\d{10}$/, { message: 'Contact number must be a 10-digit number.' }).optional(),
+  emergencyContact: z
+    .string()
+    .trim()
+    .regex(/^\d{10}$/, { message: 'Emergency contact number must be a 10-digit number.' }).optional(),
+  bloodGroup: z
+    .enum(['A+', 'A-', 'B+', 'B-', 'O+', 'O-', 'AB+', 'AB-'])
+    .optional().optional(),
+  presentAddress: z
+    .string()
+    .trim()
+    .min(1, { message: 'Present address is required.' }).optional(),
+  permanentAddress: z
+    .string()
+    .trim()
+    .min(1, { message: 'Permanent address is required.' }).optional(),
+  guardian: guardianValidationSchema.optional(),
+  localGuardian: localGuardianValidationSchema.optional(),
+  profileImage: z
+    .string()
+    .url({ message: 'Profile image must be a valid URL.' })
+    .optional(),
+  admissionSemester:z.string().optional(),
+  academicDepartment:z.string().optional()
+    })
+  })
+});
 
 export const studentValidations = {
-  createStudentValidationSchema
+  createStudentValidationSchema,
+  updateStudentValidationSchema
 };
