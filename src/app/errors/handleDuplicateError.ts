@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { TErrorSource, TGenericErrorResponse } from "../interfaces/error";
 
 const handleDuplicateError = (err:any):TGenericErrorResponse=>{
