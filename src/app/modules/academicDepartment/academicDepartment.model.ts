@@ -14,13 +14,13 @@ const academicDepartmentSchema = new Schema<IAcademicDepartment>({
     }
 },{timestamps:true})
 
-academicDepartmentSchema.pre("save", async function(next){
-    const isDepartmentExist =await AcademicDepartment.findOne({name:this.name})
-    if(isDepartmentExist){
-        throw new Error("Department already exists")
-    }
-    next()
-})
+// academicDepartmentSchema.pre("save", async function(next){
+//     const isDepartmentExist =await AcademicDepartment.findOne({name:this.name})
+//     if(isDepartmentExist){
+//         throw new Error("Department already exists")
+//     }
+//     next()
+// })
 
 academicDepartmentSchema.pre("findOneAndUpdate", async function name(next) {
     const query  = this.getQuery()
