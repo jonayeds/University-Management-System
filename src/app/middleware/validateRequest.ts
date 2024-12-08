@@ -11,7 +11,7 @@ export const requestValidator = (schema:AnyZodObject)=>{
             })
             next()
         }catch(err:any){
-            next(err.errors[0])
+            next(err)
         }
     }
 }
