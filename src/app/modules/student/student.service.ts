@@ -7,8 +7,16 @@ import { AppError } from '../../errors/appError';
 import { User } from '../user/user.model';
 import { TStudent } from './student.interface';
 
-const getAllStudents = async () => {
-  const result = await Student.find()
+const getAllStudents = async (query:Record<string,unknown>) => {
+  let searchTerm = "";
+  if(query?.searchTerm){
+    searchTerm = query?.searchTerm as string
+  }
+  const result = await Student.find({
+    $or:["email","name.firstName","presentAddress"].map((field)=>({
+      [field]:{ $regex:searchTerm, $options:"i"}
+    }))
+  })
     .populate('admissionSemester')
     .populate({
       path: 'academicDepartment',

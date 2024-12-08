@@ -9,7 +9,7 @@ import { catchAsync } from '../../utils/catchAsync';
 
 
 const getAllStudents = catchAsync(async (req, res) => {
-    const result = await studentServices.getAllStudents();
+    const result = await studentServices.getAllStudents(req.query);
     response(res, {
       success: true,
       message: 'Successfully fetched all student data',
