@@ -22,7 +22,7 @@ const getAllStudents = async (query:Record<string,unknown>) => {
   })
 
   //filtering out non query properties from queryObj
-  const excludeFields = ["searchTerm","sort","limit","page"]
+  const excludeFields = ["searchTerm","sort","limit","page","fields"]
   excludeFields.forEach(el=> delete queryObj[el])
 
   const filterQuery = searchQuery.find(queryObj)
@@ -56,12 +56,22 @@ const getAllStudents = async (query:Record<string,unknown>) => {
   
   // skip queries
   let page = 1
+  let skip =0
   if(query?.page){
-    page = Number(query.page) 
+    page = Number(query.page)
+    skip = (page-1)*limit 
   }
-  const skipQueries = await limitQuery.skip((page-1)*limit)
+  const skipQueries = limitQuery.skip(skip)
+
+
+  // field limits
+  let fields = "-__v"
+  if(query?.fields){
+    fields = (query.fields as string).split(",").join(" ")
+  }
+  const fieldLimits = await skipQueries.select(fields)
   
-  return skipQueries;
+  return fieldLimits;
 };
 
 
