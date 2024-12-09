@@ -22,7 +22,7 @@ const getAllStudents = async (query:Record<string,unknown>) => {
   })
 
   //filtering out non query properties from queryObj
-  const excludeFields = ["searchTerm","sort"]
+  const excludeFields = ["searchTerm","sort","limit","page"]
   excludeFields.forEach(el=> delete queryObj[el])
 
   const filterQuery = searchQuery.find(queryObj)
@@ -40,9 +40,28 @@ const getAllStudents = async (query:Record<string,unknown>) => {
   if(query?.sort){
     sort = query.sort as string
   }
-
-  const sortQuery = await filterQuery.sort(sort)
-  return sortQuery;
+  
+  const sortQuery = filterQuery.sort(sort)
+  
+  
+  
+  
+  
+  // Limit queries
+  let limit = 2
+  if(query?.limit){
+    limit = Number(query.limit as string)
+  }
+  const limitQuery = sortQuery.limit(limit)
+  
+  // skip queries
+  let page = 1
+  if(query?.page){
+    page = Number(query.page) 
+  }
+  const skipQueries = await limitQuery.skip((page-1)*limit)
+  
+  return skipQueries;
 };
 
 
