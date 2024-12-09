@@ -14,7 +14,7 @@ const getAllStudents = async (query:Record<string,unknown>) => {
     searchTerm = query?.searchTerm as string
   }
   const studentsearchableFields = ["name.firstName","email","name.lastName"]
-  
+
   const searchQuery = Student.find({
     $or:studentsearchableFields.map((field)=>({
       [field]:{ $regex:searchTerm, $options:"i"}
@@ -22,9 +22,10 @@ const getAllStudents = async (query:Record<string,unknown>) => {
   })
 
   //filtering out non query properties from queryObj
-  const excludeFields = ["searchTerm"]
+  const excludeFields = ["searchTerm","sort"]
   excludeFields.forEach(el=> delete queryObj[el])
-  const result = await searchQuery.find(queryObj)
+
+  const filterQuery = searchQuery.find(queryObj)
 
     .populate('admissionSemester')
     .populate({
@@ -32,10 +33,19 @@ const getAllStudents = async (query:Record<string,unknown>) => {
       populate: {
         path: 'academicFaculty',
       },
-    })
+    }) 
     .populate('user');
-  return result;
+
+  let sort = "-createdAt"  
+  if(query?.sort){
+    sort = query.sort as string
+  }
+
+  const sortQuery = await filterQuery.sort(sort)
+  return sortQuery;
 };
+
+
 const getASingleStudent = async (id: string) => {
   const result = await Student.findOne({ id })
     .populate('admissionSemester')
