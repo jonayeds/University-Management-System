@@ -2,7 +2,7 @@
 import config from '../../config';
 import { IAcademicSemester } from '../academicSemester/academicSemester.interface';
 import { AcademicSemester } from '../academicSemester/academicSemester.model';
-import { generateFacultyId, generateStudentId } from './user.utils';
+import { generateAdminId, generateFacultyId, generateStudentId } from './user.utils';
 import { TStudent } from '../student/student.interface';
 import { Student } from '../student/student.model';
 import { IUser } from './user.interface';
@@ -11,6 +11,8 @@ import mongoose from 'mongoose';
 import { AppError } from '../../errors/appError';
 import { IFaculty } from '../faculty/faculty.interface';
 import { Faculty } from '../faculty/faculty.model';
+import { IAdmin } from '../admin/admin.interface';
+import { Admin } from '../admin/admin.model';
 
 const crateStudentIntoDB = async (password: string, payload: TStudent) => {
   // create a user object
@@ -92,11 +94,44 @@ const createFacultyIntoDB = async(password:string, payLoad:IFaculty)=>{
     await session.endSession()
     throw new AppError(400, err);
   }
-
-
-
 }
+  
+const createAdminIntoDB = async(password:string, payLoad:IAdmin)=>{
+  const userData:Partial<IUser> = {}
+
+  userData.password = password || (config.default_password as string)
+  userData.role = "admin"
+
+  const session = await mongoose.startSession()
+  try{
+    session.startTransaction()
+    userData.id = await generateAdminId()
+    const newUser = await User.create([userData], {session})
+    if(!newUser.length){
+      throw new AppError(500, "Failed to create user")
+    }
+    payLoad.id = newUser[0].id
+    payLoad.user = newUser[0]._id
+    
+    const newAdmin = await Admin.create([payLoad],{session})
+    if(!newAdmin.length){
+      throw new AppError(500,"Failed to create Admin")
+    }
+    await session.commitTransaction()
+    await session.endSession()
+
+    return newAdmin
+  }catch(err:any){
+    await session.abortTransaction()
+    await session.endSession()
+    throw new AppError(400, err);
+  }
+}
+
+
+
 export const UserServices = {
   crateStudentIntoDB,
-  createFacultyIntoDB
-};
+  createFacultyIntoDB,
+  createAdminIntoDB
+}

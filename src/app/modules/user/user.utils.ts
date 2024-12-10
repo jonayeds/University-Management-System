@@ -29,6 +29,18 @@ const findLastFacultyId = async () => {
   ).sort({ createdAt: -1 });
   return lastFaculty?.id ? lastFaculty.id : undefined;
 };
+const findLastAdminId = async () => {
+  const lastAdmin = await User.findOne(
+    {
+      role: 'admin',
+    },
+    {
+      _id: 0,
+      id: 1,
+    },
+  ).sort({ createdAt: -1 });
+  return lastAdmin?.id ? lastAdmin.id : undefined;
+};
 
 // generate student id --> 2023 02 0002
 export const generateStudentId = async (payload: IAcademicSemester) => {
@@ -58,5 +70,15 @@ export const generateFacultyId = async () => {
   }
   id = 'F-' + id.padStart(4, '0');
 
+  return id;
+};
+// Generate Admin Id --> F - 0001
+export const generateAdminId = async () => {
+  let id = '1';
+  const lastAdminId = await findLastAdminId();
+  if (lastAdminId) {
+    id = (Number(lastAdminId.substring(2)) + 1).toString();
+  }
+  id = 'A-' + id.padStart(4, '0');
   return id;
 };
