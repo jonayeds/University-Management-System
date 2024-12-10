@@ -1,3 +1,4 @@
+import QueryBuilder from "../../builder/QueryBuilder"
 import { academicSemesterNameCodeValidation } from "./academicSemester.constant"
 import { IAcademicSemester } from "./academicSemester.interface"
 import { AcademicSemester } from "./academicSemester.model"
@@ -13,8 +14,17 @@ const createAcademicSemesterIntoDB = async(payLoad:IAcademicSemester)=>{
     return result    
 }
 
-const getAllAcademicSemesterFromDB = async()=>{
-    const result = await AcademicSemester.find()
+const getAllAcademicSemesterFromDB = async(query:Record<string,unknown>)=>{
+    const searchableFields = ["year","name", "code"]
+    const academicSemesterQuery = new QueryBuilder(AcademicSemester.find(),query)
+    .search(searchableFields)
+    .filter()
+    .sort()
+    .paginate()
+    .fields()
+
+    
+    const result = await academicSemesterQuery.modelQuery
     return result
 }
 
