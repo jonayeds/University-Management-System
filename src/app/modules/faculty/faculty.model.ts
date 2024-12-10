@@ -1,16 +1,31 @@
 import { model, Schema } from "mongoose";
 import { IFaculty } from "./faculty.interface";
 
-const facultySchema = new Schema<IFaculty>({
-    name:{
-        type:String,
-        required:true
+const facultyNameSchema = {
+    type:{
+        firstName:{
+            type:String,
+            required:true
+        },
+        middleName:String,
+        lastName:{
+            type:String,
+            required:true
+        }
     },
+    required:true
+}
+
+const facultySchema = new Schema<IFaculty>({
+    name:facultyNameSchema,
     email:{
         type:String,
-        required:true
     },
     contactNo:{
+        type:String,
+        required:true
+    },
+    address:{
         type:String,
         required:true
     },
@@ -22,6 +37,11 @@ const facultySchema = new Schema<IFaculty>({
     user:{
         type:Schema.Types.ObjectId,
         ref:"User",
+        required:true
+    },
+    gender:{
+        type:String,
+        enum:["Male","Female"],
         required:true
     }
 },{

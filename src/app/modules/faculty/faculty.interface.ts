@@ -8,4 +8,6 @@ export interface IFaculty{
     user:Types.ObjectId
     email:string,
     contactNo:string,
+    address:string,
+    gender:"Male"| "Female"
 }
