@@ -1,5 +1,4 @@
 import { IAcademicSemester } from '../academicSemester/academicSemester.interface';
-import { Faculty } from '../faculty/faculty.model';
 import { User } from './user.model';
 
 const findLastStudentId = async () => {
@@ -19,7 +18,7 @@ const findLastStudentId = async () => {
   return lastStudent?.id ? lastStudent.id : undefined;
 };
 const findLastFacultyId = async () => {
-  const lastFaculty = await Faculty.findOne(
+  const lastFaculty = await User.findOne(
     {
       role: 'faculty',
     },
@@ -58,6 +57,6 @@ export const generateFacultyId = async () => {
     id = (Number(lastFacultyId.substring(2)) + 1).toString();
   }
   id = 'F-' + id.padStart(4, '0');
-  
+
   return id;
 };

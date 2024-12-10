@@ -16,7 +16,8 @@ const createFacultyValidation = z.object({
             presentAddress:z.string(),
             permanetAddress:z.string().optional(),
             profile:z.string().optional()
-        })
+        }),
+        password:z.string().min(6)
     })
 })
 

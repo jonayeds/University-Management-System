@@ -20,12 +20,18 @@ const facultySchema = new Schema<IFaculty>({
     name:facultyNameSchema,
     email:{
         type:String,
+        unique:true
+    },
+    id:{
+        type:String,
+        required:true,
+        unique:true
     },
     contactNumber:{
         type:String,
         required:true
     },
-    pressentAddress:{
+    presentAddress:{
         type:String,
         required:true
     },

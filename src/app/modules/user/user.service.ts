@@ -12,6 +12,7 @@ import { User } from './user.model';
 import mongoose from 'mongoose';
 import { AppError } from '../../errors/appError';
 import { IFaculty } from '../faculty/faculty.interface';
+import { Faculty } from '../faculty/faculty.model';
 
 const crateStudentIntoDB = async (password: string, payload: TStudent) => {
   // create a user object
@@ -69,13 +70,29 @@ const createFacultyIntoDB = async(password:string, payLoad:IFaculty)=>{
   userData.password = password || (config.default_password as string)
   userData.role = "faculty"
 
-  // const session = await mongoose.startSession()
+  const session = await mongoose.startSession()
   try{
+    session.startTransaction()
     userData.id = await generateFacultyId()
+    const newUser = await User.create([userData], {session})
+    if(!newUser.length){
+      throw new AppError(500, "Failed to create user")
+    }
+    payLoad.id = newUser[0].id
+    payLoad.user = newUser[0]._id
 
-    return userData
-  }catch(err){
-    console.log(err)
+    const newFaculty = await Faculty.create([payLoad],{session})
+    if(!newFaculty.length){
+      throw new AppError(500,"Failed to create Faculty")
+    }
+    await session.commitTransaction()
+    await session.endSession()
+
+    return newFaculty
+  }catch(err:any){
+    await session.abortTransaction()
+    await session.endSession()
+    throw new AppError(400, err);
   }
 
 
