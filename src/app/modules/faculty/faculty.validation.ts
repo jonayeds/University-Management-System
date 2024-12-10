@@ -8,12 +8,15 @@ const facultyNameValidation = z.object({
 
 const createFacultyValidation = z.object({
     body:z.object({
-        name:facultyNameValidation,
-        email:z.string().email({message:"Email is not valid"}).optional(),
-        contactNo:z.string().regex(/^\d{10}$/, { message: 'Contact number must be a 10-digit number.' }),
-        gender:z.enum(["Male","Female"]),
-        address:z.string().optional(),
-        academicDepartment:z.string()
+        faculty:z.object({
+            name:facultyNameValidation,
+            email:z.string().email({message:"Email is not valid"}).optional(),
+            contactNumber:z.string().regex(/^\d{10}$/, { message: 'Contact number must be a 10-digit number.' }),
+            gender:z.enum(["Male","Female"]),
+            presentAddress:z.string(),
+            permanetAddress:z.string().optional(),
+            profile:z.string().optional()
+        })
     })
 })
 

@@ -21,18 +21,16 @@ const facultySchema = new Schema<IFaculty>({
     email:{
         type:String,
     },
-    contactNo:{
+    contactNumber:{
         type:String,
         required:true
     },
-    address:{
+    pressentAddress:{
         type:String,
         required:true
     },
-    academicDepartment:{
-        type:Schema.Types.ObjectId,
-        ref:"AcademicDepartment",
-        required:true
+    permanentAddress:{
+        type:String,
     },
     user:{
         type:Schema.Types.ObjectId,
@@ -43,6 +41,13 @@ const facultySchema = new Schema<IFaculty>({
         type:String,
         enum:["Male","Female"],
         required:true
+    },
+    isDeleted:{
+        type:Boolean,
+        default:false
+    },
+    profile:{
+        type:String,
     }
 },{
     timestamps:true
