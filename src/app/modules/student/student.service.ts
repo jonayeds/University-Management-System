@@ -6,74 +6,20 @@ import { Student } from './student.model';
 import { AppError } from '../../errors/appError';
 import { User } from '../user/user.model';
 import { TStudent } from './student.interface';
+import QueryBuilder from '../../builder/QueryBuilder';
+import { studentsearchableFields } from './student.constant';
 
-const getAllStudents = async (query:Record<string,unknown>) => {
-  let searchTerm = "";
-  const queryObj = {...query}
-  if(query?.searchTerm){
-    searchTerm = query?.searchTerm as string
-  }
-  const studentsearchableFields = ["name.firstName","email","name.lastName"]
+const getAllStudents = async (query: Record<string, unknown>) => {
+  const studentQuery = new QueryBuilder(Student.find(), query)
+  .search(studentsearchableFields)
+  .filter()
+  .sort()
+  .paginate()
+  .fields()
 
-  const searchQuery = Student.find({
-    $or:studentsearchableFields.map((field)=>({
-      [field]:{ $regex:searchTerm, $options:"i"}
-    }))
-  })
-
-  //filtering out non query properties from queryObj
-  const excludeFields = ["searchTerm","sort","limit","page","fields"]
-  excludeFields.forEach(el=> delete queryObj[el])
-
-  const filterQuery = searchQuery.find(queryObj)
-
-    .populate('admissionSemester')
-    .populate({
-      path: 'academicDepartment',
-      populate: {
-        path: 'academicFaculty',
-      },
-    }) 
-    .populate('user');
-
-  let sort = "-createdAt"  
-  if(query?.sort){
-    sort = query.sort as string
-  }
-  
-  const sortQuery = filterQuery.sort(sort)
-  
-  
-  
-  
-  
-  // Limit queries
-  let limit = 2
-  if(query?.limit){
-    limit = Number(query.limit as string)
-  }
-  const limitQuery = sortQuery.limit(limit)
-  
-  // skip queries
-  let page = 1
-  let skip =0
-  if(query?.page){
-    page = Number(query.page)
-    skip = (page-1)*limit 
-  }
-  const skipQueries = limitQuery.skip(skip)
-
-
-  // field limits
-  let fields = "-__v"
-  if(query?.fields){
-    fields = (query.fields as string).split(",").join(" ")
-  }
-  const fieldLimits = await skipQueries.select(fields)
-  
-  return fieldLimits;
+  const result = await studentQuery.modelQuery
+  return result 
 };
-
 
 const getASingleStudent = async (id: string) => {
   const result = await Student.findOne({ id })
@@ -117,7 +63,7 @@ const deleteStudentFromDB = async (studentId: string) => {
   } catch (err) {
     await session.abortTransaction();
     await session.endSession();
-    throw new AppError(500,"Failed to delete Student")
+    throw new AppError(500, 'Failed to delete Student');
   }
 };
 
@@ -125,33 +71,34 @@ const updateStudentIntoDB = async (
   studentId: string,
   payload: Partial<TStudent>,
 ) => {
-  const {name,guardian,localGuardian, ...remainingStudentData} = payload
-  const modifiedUpdatedData : Record<string,unknown> = {
-    ...remainingStudentData
-  }
-  if(name && Object.keys(name).length){
-    for(const [key,value] of Object.entries(name)){
-      modifiedUpdatedData[`name.${key}`] = value
+  const { name, guardian, localGuardian, ...remainingStudentData } = payload;
+  const modifiedUpdatedData: Record<string, unknown> = {
+    ...remainingStudentData,
+  };
+  if (name && Object.keys(name).length) {
+    for (const [key, value] of Object.entries(name)) {
+      modifiedUpdatedData[`name.${key}`] = value;
     }
   }
-  if(guardian && Object.keys(guardian).length){
-    for(const [key,value] of Object.entries(guardian)){
-      modifiedUpdatedData[`guardian.${key}`] = value
+  if (guardian && Object.keys(guardian).length) {
+    for (const [key, value] of Object.entries(guardian)) {
+      modifiedUpdatedData[`guardian.${key}`] = value;
     }
   }
-  if(localGuardian && Object.keys(localGuardian).length){
-    for(const [key,value] of Object.entries(localGuardian)){
-      modifiedUpdatedData[`localGuardian.${key}`] = value
+  if (localGuardian && Object.keys(localGuardian).length) {
+    for (const [key, value] of Object.entries(localGuardian)) {
+      modifiedUpdatedData[`localGuardian.${key}`] = value;
     }
   }
-  const result = await Student.findOneAndUpdate({id:studentId},
-    modifiedUpdatedData
-  ,{
-    new:true,
-    runValidators:true
-  })
-  return result
-
+  const result = await Student.findOneAndUpdate(
+    { id: studentId },
+    modifiedUpdatedData,
+    {
+      new: true,
+      runValidators: true,
+    },
+  );
+  return result;
 };
 
 export const studentServices = {
