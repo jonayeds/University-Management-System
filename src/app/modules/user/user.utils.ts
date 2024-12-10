@@ -51,7 +51,7 @@ export const generateStudentId = async (payload: IAcademicSemester) => {
 
 // Generate Faculty Id --> F - 0001
 export const generateFacultyId = async () => {
-  let id = '0';
+  let id = '1';
   const lastFacultyId = await findLastFacultyId();
   if (lastFacultyId) {
     id = (Number(lastFacultyId.substring(2)) + 1).toString();

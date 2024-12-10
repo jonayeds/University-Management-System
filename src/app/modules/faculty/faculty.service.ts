@@ -39,7 +39,7 @@ const deleteFaculty = async(facultyId:string)=>{
     const session = await mongoose.startSession()
     try {
         session.startTransaction()
-        const deletedUser = await User.findByIdAndUpdate({id:facultyId},{isDeleted:true},{new:true, session})
+        const deletedUser = await User.findOneAndUpdate({id:facultyId},{isDeleted:true},{new:true, session})
         if(!deletedUser){
             throw new AppError(500, "Failed to delete user")
         }
