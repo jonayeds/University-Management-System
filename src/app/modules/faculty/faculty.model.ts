@@ -74,4 +74,5 @@ facultySchema.pre("save", async function(next){
     next()
 })
 
+
 export const Faculty = model<IFaculty>("Faculty", facultySchema)

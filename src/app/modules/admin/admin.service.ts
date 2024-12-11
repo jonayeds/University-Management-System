@@ -19,7 +19,7 @@ const getAllAdminsFromDB = async(query:Record<string,unknown>)=>{
     return result
 }
 const getASingleAdmin = async(adminId:string)=>{
-    const result = await Admin.findOne({id:adminId})
+    const result = await Admin.findById(adminId)
     return result
 }
 
