@@ -1,5 +1,7 @@
 import { model, Schema } from "mongoose";
 import { IFaculty } from "./faculty.interface";
+import { AppError } from "../../errors/appError";
+import { AcademicDepartment } from "../academicDepartment/academicDepartment.model";
 
 const facultyNameSchema = {
     type:{
@@ -54,9 +56,22 @@ const facultySchema = new Schema<IFaculty>({
     },
     profile:{
         type:String,
+    },
+    academicDepartment:{
+        type:Schema.Types.ObjectId,
+        ref:"AcademicDepartment",
+        required:true
     }
 },{
     timestamps:true
+})
+
+facultySchema.pre("save", async function(next){
+    const academicDepartment = await AcademicDepartment.findById(this.academicDepartment)
+    if(!academicDepartment){
+        throw new AppError(404, "Academic Department not found")
+    }
+    next()
 })
 
 export const Faculty = model<IFaculty>("Faculty", facultySchema)

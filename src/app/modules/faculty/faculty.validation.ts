@@ -20,7 +20,8 @@ const createFacultyValidation = z.object({
             gender:z.enum(["Male","Female"]),
             presentAddress:z.string(),
             permanetAddress:z.string().optional(),
-            profile:z.string().optional()
+            profile:z.string().optional(),
+            academicDepartment:z.string()
         }),
         password:z.string().min(6)
     })
@@ -33,7 +34,8 @@ const updateFacultyValidation = z.object({
         gender:z.enum(["Male","Female"]).optional(),
         presentAddress:z.string().optional(),
         permanetAddress:z.string().optional(),
-        profile:z.string().optional()
+        profile:z.string().optional(),
+        aacademicDEpartment:z.string().optional()
     }),
 })
 

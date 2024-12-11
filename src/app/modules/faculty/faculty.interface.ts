@@ -11,5 +11,6 @@ export interface IFaculty{
     permanentAddress:string,
     gender:"Male"| "Female",
     profile:string
-    isDeleted:boolean
+    isDeleted:boolean,
+    academicDepartment:Types.ObjectId;
 }
