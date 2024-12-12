@@ -9,5 +9,6 @@ export interface ICourse{
     prefix:string;
     code:number;
     credits:number;
-    preRequisiteCourses:TPreRequisiteCourses[]
+    preRequisiteCourses:TPreRequisiteCourses[];
+    isDeleted:boolean
 }
