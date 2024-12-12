@@ -32,16 +32,16 @@ const getASingleCourse = catchAsync(async (req,res)=>{
     })
 })
 
-// const updateCourse = catchAsync(async (req,res)=>{
-//     const {id} = req.params
-//     const result = await CourseServices
-//     response(res,{
-//         statusCode:200,
-//         success:true,
-//         message:"Successfully fetched all Faculties",
-//         data:result
-//     })
-// })
+const updateCourse = catchAsync(async (req,res)=>{
+    const {id} = req.params
+    const result = await CourseServices.updateCourseIntoDB(id, req.body)
+    response(res,{
+        statusCode:200,
+        success:true,
+        message:"Successfully fetched all Faculties",
+        data:result
+    })
+})
 
 const deleteCourse = catchAsync(async (req,res)=>{
     const {id} = req.params
@@ -58,5 +58,6 @@ export const CourseControllers = {
     createCourse,
     getAllCourses,
     getASingleCourse,
+    updateCourse,
     deleteCourse
 }
