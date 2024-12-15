@@ -71,8 +71,9 @@ const deleteCourseFromDB = async(id:string)=>{
 
 const assignFacultiesIntoCourses = async(id:string, payload:Partial<ICourseFaculties>)=>{
     const result = await CourseFaculty.findByIdAndUpdate(id,{
+        course:id,
         $addToSet:{
-            $eatch:payload
+            faculties:{$each:payload} 
         }
     },{upsert:true,new:true})
     return result
