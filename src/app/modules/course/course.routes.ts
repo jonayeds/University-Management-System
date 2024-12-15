@@ -11,6 +11,7 @@ router.get("/:id", CourseControllers.getASingleCourse)
 router.patch("/:id",requestValidator(CourseValidations.updateCourseValidationSchema), CourseControllers.updateCourse)
 router.delete("/:id", CourseControllers.deleteCourse)
 
-router.put("/:courseId/assign-faculties",requestValidator(CourseValidations.assignFacultiesIntoCoursesValidation),CourseControllers.assignFaculties )
+router.put("/:courseId/assign-faculties",requestValidator(CourseValidations.FacultiesWithCoursesValidation),CourseControllers.assignFaculties )
+router.delete("/:courseId/remove-faculties",requestValidator(CourseValidations.FacultiesWithCoursesValidation),CourseControllers.removeFaculties )
 
 export const CourseRoutes = router
