@@ -37,4 +37,6 @@ const semesterRegistrationSchema = new Schema<ISemesterRegistration>(
 
 
 
+
+
 export const SemesterRegistration =model<ISemesterRegistration>("SemesterRegistration", semesterRegistrationSchema)
