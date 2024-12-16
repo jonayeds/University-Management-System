@@ -1,7 +1,9 @@
+
 import { AppError } from "../../errors/appError"
 import { AcademicSemester } from "../academicSemester/academicSemester.model"
 import { ISemesterRegistration } from "./semesterRegistration.interface"
 import { SemesterRegistration } from "./semesterRegistration.model"
+import QueryBuilder from "../../builder/QueryBuilder"
 
 const createSemesterRegistrationIntoDB = async(payload:ISemesterRegistration)=>{
     const academicSemester = payload?.academicSemester
@@ -14,15 +16,23 @@ const createSemesterRegistrationIntoDB = async(payload:ISemesterRegistration)=>{
     if(!isAcademicSemesterExist){
         throw new AppError(404,"Academic semester does not exist")
     }
+
     const result  =await SemesterRegistration.create(payload)
     return result 
 }
-const getAllSemesterRegistrationsFromDB = async()=>{
-    const result  =await SemesterRegistration.find()
+const getAllSemesterRegistrationsFromDB = async(query:Record<string, unknown>)=>{
+    const searchableFields = ["status"]
+    const semesterRegistrationQuery = new QueryBuilder(SemesterRegistration.find().populate("academicSemester"), query)
+    .search(searchableFields)
+    .filter()
+    .sort()
+    .paginate()
+    .fields()
+    const result  =await semesterRegistrationQuery.modelQuery
     return result 
 }
 const getASingleSemesterRegistrationFromDB = async(id:string)=>{
-    const result  =await SemesterRegistration.findById(id)
+    const result  =await SemesterRegistration.findById(id).populate("academicSemester")
     return result 
 }
 const updateSemesterRegistration = async(id:string, payload:Partial<ISemesterRegistration>)=>{
