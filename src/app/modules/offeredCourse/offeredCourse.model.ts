@@ -3,7 +3,7 @@ import { IOfferedCourse } from "./offeredCourse.interface";
 import { Days } from "./offeredCourse.constant";
 
 const offeredCourseSchema = new Schema<IOfferedCourse>({
-    semsesterRegistration:{
+    semesterRegistration:{
         type:Schema.Types.ObjectId,
         ref:"SemesterRegistration",
         required:true
@@ -13,7 +13,7 @@ const offeredCourseSchema = new Schema<IOfferedCourse>({
         ref:"AcademicSemester",
         required:true
     },
-    academicfaculty:{
+    academicFaculty:{
         type:Schema.Types.ObjectId,
         ref:"AcademicFaculty",
         required:true
@@ -42,7 +42,7 @@ const offeredCourseSchema = new Schema<IOfferedCourse>({
         required:true
     },
     days:{
-        type:String,
+        type:[String],
         enum:Days,
         required:true
     },
