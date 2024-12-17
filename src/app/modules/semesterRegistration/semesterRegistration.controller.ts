@@ -30,7 +30,9 @@ const getASingleSemesterRegistration = catchAsync(async(req, res)=>{
     })
 })
 const updateSemesterRegistration = catchAsync(async(req, res)=>{
-    const result = await SemesterRegistrationService.updateSemesterRegistration(req.params.id, req.body)
+    const {id} = req.params
+    const updateData = req.body
+    const result = await SemesterRegistrationService.updateSemesterRegistration(id, updateData)
     response(res,{
         success:true,
         statusCode:200,
