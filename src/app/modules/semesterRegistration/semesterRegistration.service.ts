@@ -65,9 +65,14 @@ const updateSemesterRegistration = async(id:string, payload:Partial<ISemesterReg
     return result 
 }
 
+const deleteSemesterRegistration = async(id)=>{
+
+}
+
 export const SemesterRegistrationService = {
     createSemesterRegistrationIntoDB,
     getASingleSemesterRegistrationFromDB,
     getAllSemesterRegistrationsFromDB,
-    updateSemesterRegistration
+    updateSemesterRegistration,
+    deleteSemesterRegistration
 }

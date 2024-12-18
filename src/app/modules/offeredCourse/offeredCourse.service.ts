@@ -95,8 +95,43 @@ const getASingleOfferedCourse = async(id:string)=>{
     return result
 }
 
+const updateOfferedCourse = async(payload:Pick<IOfferedCourse, "faculty"|"startTime"|"days"|"endTime">, id:string)=>{
+    const isOfferedCourseExist = await OfferedCourse.findById(id)
+    if(!isOfferedCourseExist){
+        throw new AppError(404,"Offered course not found ")
+    }
+    const isFacultyExist = await Faculty.findById(payload.faculty)
+    if(!isFacultyExist){
+        throw new AppError(404,"Offered course not found ")
+    }
+    const semsesterRegistrationStatus = await SemesterRegistration.findById(isOfferedCourseExist.semesterRegistration)
+    if(semsesterRegistrationStatus?.status === "ENDED" ||
+        semsesterRegistrationStatus?.status === "ONGOING"
+    ){
+        throw new AppError(500, `Cannot update ${semsesterRegistrationStatus.status} Semester`)
+    }
+    const newSchedule:TSchedule = {
+        days:payload.days,
+        startTime:payload.startTime,
+        endTime:payload.endTime
+    }
+    const assignedSchedules = await OfferedCourse.find({
+        semesterRegistration:isOfferedCourseExist.semesterRegistration,
+        faculty:payload.faculty,
+        days:{$in:payload.days}
+    }).select("days startTime endTime")
+    const hasTimeConflicts = hasTimeConflict(assignedSchedules,newSchedule)
+    if(hasTimeConflicts){
+        throw new AppError(400,"Faculty already occupied at the same time")
+    }
+    const result = await OfferedCourse.findByIdAndUpdate(id,payload, {new:true})
+    return result
+
+}
+
 export const OfferedCourseService = {
   createOfferedCourse,
   getAllOfferedCourse,
   getASingleOfferedCourse,
+  updateOfferedCourse
 };

@@ -33,8 +33,21 @@ const getASingleOfferedCourse = catchAsync(async (req, res)=>{
     })
 })
 
+const updateOfferedCourse = catchAsync(async (req, res)=>{
+    const {id} = req.params
+    const updateData = req.body
+    const result  = await OfferedCourseService.updateOfferedCourse(updateData, id)
+    response(res, {
+        success:true,
+        statusCode:200,
+        message:"Successfully updated Offered course",
+        data:result
+    })
+})
+
 export const OfferedCourseControllers = {
     createOfferedCourse,
     getAllOfferedCourse,
     getASingleOfferedCourse,
+    updateOfferedCourse
 }
