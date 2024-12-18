@@ -46,7 +46,7 @@ const deleteSemesterRegistration = catchAsync(async(req, res)=>{
     response(res,{
         success:true,
         statusCode:200,
-        message:"Successfully created SemesterRegistration",
+        message:"Successfully Deleted  SemesterRegistration with all the corresponding offered course",
         data:result
     })
 })

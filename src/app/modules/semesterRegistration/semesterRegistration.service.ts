@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 
 import { AppError } from "../../errors/appError"
 import { AcademicSemester } from "../academicSemester/academicSemester.model"
@@ -5,6 +6,8 @@ import { ISemesterRegistration } from "./semesterRegistration.interface"
 import { SemesterRegistration } from "./semesterRegistration.model"
 import QueryBuilder from "../../builder/QueryBuilder"
 import { SemesterRegistrationStatusObj } from "./semesterRegistration.constant"
+import { OfferedCourse } from "../offeredCourse/offeredCourse.model"
+import mongoose from "mongoose"
 
 const createSemesterRegistrationIntoDB = async(payload:ISemesterRegistration)=>{
     const academicSemester = payload?.academicSemester
@@ -65,8 +68,30 @@ const updateSemesterRegistration = async(id:string, payload:Partial<ISemesterReg
     return result 
 }
 
-const deleteSemesterRegistration = async(id)=>{
-
+const deleteSemesterRegistration = async(id:string)=>{
+    // checking status of the registered semester
+    const registeredSemesterStatus = await SemesterRegistration.findById(id)
+    if(!registeredSemesterStatus){
+        throw new AppError(404, `Semester Registration not found`)
+    }
+    if(registeredSemesterStatus?.status !== "UPCOMING"){
+        throw new AppError(400, `Cannot delete an ${registeredSemesterStatus?.status} Semester`)
+    }
+    const session = await mongoose.startSession()
+    try {
+        session.startTransaction()
+        // fetching and deleting all offered courses in the registered semseter
+    await OfferedCourse.deleteMany({semesterRegistration:id})
+    const result = await SemesterRegistration.findByIdAndDelete(id)
+    await session.commitTransaction()
+    await session.endSession()
+    return result
+    } catch (error :any) {
+        await session.abortTransaction()
+        await session.endSession()
+        throw new AppError(500,error)
+    }
+    
 }
 
 export const SemesterRegistrationService = {
