@@ -7,6 +7,7 @@ import { Faculty } from '../faculty/faculty.model';
 import { SemesterRegistration } from '../semesterRegistration/semesterRegistration.model';
 import { IOfferedCourse } from './offeredCourse.interface';
 import { OfferedCourse } from './offeredCourse.model';
+import { hasTimeConflict, TSchedule } from './offeredCourse.utils';
 
 const createOfferedCourse = async (payload: IOfferedCourse) => {
     // check if semesterRegistration exists'
@@ -49,20 +50,20 @@ const createOfferedCourse = async (payload: IOfferedCourse) => {
     }
 
     // check is there any time confliction for faculty
+    const newSchedule:TSchedule = {
+        days:payload.days,
+        startTime:payload.startTime,
+        endTime:payload.endTime
+    }
     const assignedSchedules = await OfferedCourse.find({
         semesterRegistration:payload.semesterRegistration,
         faculty:payload.faculty,
         days:{$in:payload.days}
     }).select("days startTime endTime")
-    assignedSchedules.forEach((shcedule)=>{
-        const existingStartTime = new Date(`1970-01-01T${shcedule.startTime}`)
-        const existingEndTime = new Date(`1970-01-01T${shcedule.startTime}`)
-        const newStartTime = new Date(`1970-01-01T${payload.startTime}`)
-        const newEndTime = new Date(`1970-01-01T${payload.endTime}`)
-        if(newStartTime<=existingEndTime && newEndTime>=existingStartTime){
-            throw new AppError(400,"Faculty already occupied at the same time")
-        }
-    })
+    const hasTimeConflicts = hasTimeConflict(assignedSchedules,newSchedule)
+    if(hasTimeConflicts){
+        throw new AppError(400,"Faculty already occupied at the same time")
+    }
     payload.academicSemester = isSemesterRegistrationExists.academicSemester
   const result = await OfferedCourse.create(payload);
   return result;
