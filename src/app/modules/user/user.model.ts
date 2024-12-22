@@ -37,7 +37,7 @@ const userSchema = new Schema<IUser>(
 );
 
 
-// pre save middleware
+// pre save middeware
 userSchema.pre('save', async function (next) {
   // Hashing password and save into DB
   this.password = await bcrypt.hash(this.password, Number(config.salt_rounds));

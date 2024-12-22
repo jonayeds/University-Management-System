@@ -15,7 +15,7 @@ class QueryBuilder<T> {
           [field]: { $regex: searchTerm, $options: 'i' },
         })),
       });
-    }
+    } 
     return this;
   }
 
