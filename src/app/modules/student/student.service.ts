@@ -15,7 +15,7 @@ const getAllStudents = async (query: Record<string, unknown>) => {
     populate:{
       path:"academicFaculty"
     }
-  }), query)
+  }).populate("user"), query)
   .search(studentsearchableFields)
   .filter()
   .sort()

@@ -2,8 +2,8 @@ import config from "../../config";
 import { AppError } from "../../errors/appError";
 import { User } from "../user/user.model";
 import { ILoginUser } from "./auth.interface";
-import jwt from "jsonwebtoken"
-
+import jwt, { JwtPayload } from "jsonwebtoken"
+import bcrypt from "bcrypt"
 const loginUser = async(payload:ILoginUser)=>{
     const user = await User.isUserExistsByCustomId(payload.id)
     if(!user){
@@ -26,6 +26,24 @@ const loginUser = async(payload:ILoginUser)=>{
 
 }
 
+const changePassword = async(user:JwtPayload, payload:{oldPassword:string,newPassword:string})=>{
+    const currentUser = await User.isUserExistsByCustomId(user.id)
+    if(!currentUser){
+        throw new AppError(404,"User not found")
+    }
+    if(currentUser.status ==="blocked"){
+        throw new AppError(400,"User is blocked")
+    }
+    if(!await User.isPasswordMatched(payload.oldPassword, currentUser.password)){
+        throw new AppError(403, "Your password is wrong")
+    }
+    // hash new password
+    const newHashedPassword = await bcrypt.hash(payload.newPassword, Number(config.salt_rounds))
+    await User.findOneAndUpdate({id:user.id, role:user.role}, {password:newHashedPassword, needsPasswordChange:false, passwordChangedAt:new Date()}, {new:true} )
+    return {}
+}
+
 export const AuthServices = {
-    loginUser
+    loginUser,
+    changePassword
 }

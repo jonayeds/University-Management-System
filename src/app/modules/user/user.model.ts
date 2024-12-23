@@ -14,6 +14,10 @@ const userSchema = new Schema<IUser, IUserModel>(
       type: String,
       required: [true, 'Password is required'],
       minlength: [6, 'Password must be 6 characters long at least'],
+      select:0
+    },
+    passwordChangedAt:{
+      type:Date
     },
     needsPasswordChange: {
       type: Boolean,
