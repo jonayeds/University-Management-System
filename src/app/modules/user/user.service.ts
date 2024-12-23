@@ -20,7 +20,7 @@ const crateStudentIntoDB = async (password: string, payload: TStudent) => {
 
   // if password is not given, using default password
   userData.password = password || (config.default_password as string);
-
+  console.log(userData.password)
   // set student role
   userData.role = 'student';
 
