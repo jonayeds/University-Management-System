@@ -24,6 +24,7 @@ export interface IUserModel extends Model<IUser>{
     passwordChangedTimestamp: Date,
     jwtIssuedTimestamp: number,
   ): boolean;
+  isJWTIssuedBeforePasswordChanged(passwordChangedTimeStamp:Date, jwtIssuedTimeStamp:number):boolean
 }
 
 export interface NewUser {

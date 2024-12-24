@@ -7,7 +7,7 @@ import { User_role } from "../user/user.constant";
 
 const router = Router()
 
-router.get("/",auth(User_role.admin), FacultyControllers.getAllFaculties)
+router.get("/",auth(User_role.admin, User_role.faculty), FacultyControllers.getAllFaculties)
 router.get("/:facultyId", FacultyControllers.getASingleFaculty)
 router.patch("/:facultyId",requestValidator(FacultyValidations.updateFacultyValidation), FacultyControllers.updateFaculty)
 router.delete("/:facultyId", FacultyControllers.deleteFaculty)
