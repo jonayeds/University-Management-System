@@ -7,6 +7,7 @@ import { FacultyValidations } from '../faculty/faculty.validation';
 import { AdminValidations } from '../admin/admin.validation';
 import { auth } from '../../middleware/auth';
 import { User_role } from './user.constant';
+import { UserValidation } from './user.validation';
 
 const router = express.Router();
 
@@ -31,6 +32,12 @@ router.post(
   '/me',
   auth(User_role.admin,User_role.faculty, User_role.student),
   UserControllers.getMe,
+);
+router.post(
+  '/change-status/:id',
+  auth(User_role.admin),
+  requestValidator(UserValidation.changeStatusValidationSchema),
+  UserControllers.changeStatus,
 );
 
 export const UserRoutes = router;

@@ -4,3 +4,4 @@ export const User_role = {
     faculty:"faculty"
 } as const
 
+export const User_Status = ['inProgress', 'blocked']

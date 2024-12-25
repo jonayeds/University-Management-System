@@ -1,7 +1,7 @@
 import { UserServices } from "./user.service";
 import { catchAsync } from "../../utils/catchAsync";
 import { response } from "../../utils/sendResponse";
-import { AppError } from "../../errors/appError";
+import { JwtPayload } from "jsonwebtoken";
 
 
 const createStudent =catchAsync(async (req, res) => {
@@ -38,14 +38,20 @@ const createStudent =catchAsync(async (req, res) => {
 
   })
   const getMe = catchAsync(async(req,res)=>{
-    const token = req.headers.authorization
-    if(!token){
-      throw new AppError(404, "Token not found")
-    }
-    const result = await UserServices.getMe(token)
+    const result = await UserServices.getMe(req.query.user as JwtPayload)
     response(res,{
       success:true,
       message:"Successfully fetched your data",
+      data:result,
+      statusCode:200
+    })
+
+  })
+  const changeStatus = catchAsync(async(req,res)=>{
+    const result = await UserServices.changeStatus(req.params.id, req.body)
+    response(res,{
+      success:true,
+      message:"Successfully changed status",
       data:result,
       statusCode:200
     })
@@ -57,5 +63,6 @@ const createStudent =catchAsync(async (req, res) => {
     createStudent,
     createFaculty,
     createAdmin,
-    getMe
+    getMe,
+    changeStatus
   }
