@@ -138,10 +138,43 @@ const forgetPassword = async(id:string)=>{
   const resetToken = createToken(
     jwtPayload,
     config.jwt_access_secret as string,
-    config.jwt_access_expires_in as string,
+    "2m",
   );
     const resetUILink = `${config.reset_password_ui_link}/?id=${user.id}&token=${resetToken}`
     sendEmail(user.email,resetUILink)
+
+}
+
+const resetPassword = async(payload:{id:string, newPassword:string}, token:string)=>{
+  const user = await User.isUserExistsByCustomId(payload.id);
+  if (!user) {
+    throw new AppError(404, 'User not found');
+  }
+  if (user.status === 'blocked') {
+    throw new AppError(400, 'User is blocked');
+  }
+  if (user.isDeleted) {
+    throw new AppError(400, 'User is Deleted');
+  }
+  const decoded = jwt.verify(
+    token,
+    config.jwt_access_secret as string,
+  ) as JwtPayload;
+  if(decoded.id !== payload.id){
+    throw new AppError(402, "You are forbidden")
+  }
+  const newHashedPassword = await bcrypt.hash(
+    payload.newPassword,
+    Number(config.salt_rounds),
+  );
+  await User.findOneAndUpdate(
+    { id: decoded.id, role: decoded.role },
+    {
+      password: newHashedPassword,
+      passwordChangedAt: new Date(),
+    },
+    { new: true },
+  );
 
 }
 
@@ -149,5 +182,6 @@ export const AuthServices = {
   loginUser,
   changePassword,
   refreshToken,
-  forgetPassword
+  forgetPassword,
+  resetPassword,
 };
