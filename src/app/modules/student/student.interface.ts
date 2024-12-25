@@ -1,5 +1,5 @@
 /* eslint-disable no-unused-vars */
-import { Model, Types } from "mongoose";
+import { Model, Types } from 'mongoose';
 
 export type TGuardian = {
   fatherName: string;
@@ -23,9 +23,9 @@ export type TLocalGuardian = {
 
 export interface TStudent {
   id: string;
-  user:Types.ObjectId
+  user: Types.ObjectId;
   name: TUsername;
-  password:string;
+  password: string;
   gender: 'Male' | 'Female';
   email: string;
   dateOfBirth: Date;
@@ -38,13 +38,12 @@ export interface TStudent {
   guardian: TGuardian;
   localGuardian: TLocalGuardian;
   profileImage?: string;
-  admissionSemester: Types.ObjectId,
-  academicDepartment:Types.ObjectId,
-  isDeleted:boolean
+  admissionSemester: Types.ObjectId;
+  academicDepartment: Types.ObjectId;
+  isDeleted: boolean;
 }
 
-
 // for creating static
-export interface StudentModel extends Model<TStudent>{
-   isUserExist(id:string):Promise<TStudent|null>
-}                  
+export interface StudentModel extends Model<TStudent> {
+  isUserExist(id: string): Promise<TStudent | null>;
+}

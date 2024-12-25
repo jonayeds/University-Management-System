@@ -20,10 +20,10 @@ const userSchema = new Schema<IUser, IUserModel>(
       type: String,
       required: [true, 'Password is required'],
       minlength: [6, 'Password must be 6 characters long at least'],
-      select:0
+      select: 0,
     },
-    passwordChangedAt:{
-      type:Date
+    passwordChangedAt: {
+      type: Date,
     },
     needsPasswordChange: {
       type: Boolean,
@@ -79,9 +79,12 @@ userSchema.statics.isJWTIssuedBeforePasswordChanged = function (
   return passwordChangedTime > jwtIssuedTimestamp;
 };
 
-userSchema.statics.isJWTIssuedBeforePasswordChanged = function(passwordChangedAt:Date, jwtIssuedTimeStamp:number){
-  const passwordChangeTime  = new Date(passwordChangedAt).getTime() / 1000
-  return passwordChangeTime>jwtIssuedTimeStamp
-}
+userSchema.statics.isJWTIssuedBeforePasswordChanged = function (
+  passwordChangedAt: Date,
+  jwtIssuedTimeStamp: number,
+) {
+  const passwordChangeTime = new Date(passwordChangedAt).getTime() / 1000;
+  return passwordChangeTime > jwtIssuedTimeStamp;
+};
 
 export const User = model<IUser, IUserModel>('User', userSchema);

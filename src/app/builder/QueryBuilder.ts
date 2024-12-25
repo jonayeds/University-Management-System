@@ -15,21 +15,29 @@ class QueryBuilder<T> {
           [field]: { $regex: searchTerm, $options: 'i' },
         })),
       });
-    } 
+    }
     return this;
   }
 
   filter() {
     const queryObj = { ...this.query };
     //filtering out non query properties from queryObj
-    const excludeFields = ['searchTerm', 'sort', 'limit', 'page', 'fields',"user"];
+    const excludeFields = [
+      'searchTerm',
+      'sort',
+      'limit',
+      'page',
+      'fields',
+      'user',
+    ];
     excludeFields.forEach((el) => delete queryObj[el]);
     this.modelQuery = this.modelQuery.find(queryObj);
     return this;
   }
 
   sort() {
-    const sort = (this?.query?.sort as string)?.split(',')?.join(' ') || '-createdAt';
+    const sort =
+      (this?.query?.sort as string)?.split(',')?.join(' ') || '-createdAt';
     this.modelQuery = this.modelQuery.sort(sort as string);
     return this;
   }
@@ -42,10 +50,11 @@ class QueryBuilder<T> {
   }
 
   fields() {
-    const fields =(this?.query?.fields as string)?.split(',')?.join(' ') || '-__v';
+    const fields =
+      (this?.query?.fields as string)?.split(',')?.join(' ') || '-__v';
     this.modelQuery = this.modelQuery.select(fields);
     return this;
   }
 }
 
-export default QueryBuilder
+export default QueryBuilder;

@@ -25,7 +25,7 @@ const guardianSchema = new Schema<TGuardian>({
   fatherName: { type: String },
   fatherOccupation: { type: String },
   fatherContactNo: { type: String },
-  motherName: { type: String }, 
+  motherName: { type: String },
   motherContactNo: { type: String },
   motherOccupation: { type: String },
 });
@@ -36,81 +36,87 @@ const localGuardianSchema = new Schema<TLocalGuardian>({
   contactNo: { type: String },
 });
 
-const studentSchema = new Schema<TStudent, StudentModel>({
-  id: {
-    type: String,
-    required: true,
-    unique: true,
-  },
-  user:{
-    type:Schema.Types.ObjectId,
-    required:[true, "User Id is required"],
-    unique:true,
-    ref:"User"
-  },
-  name: {
-    type: userNameSchema,
-    required: true,
-  },
-  gender: {
-    type: String,
-    enum: {
-      values: ['Male', 'Female'],
-      message: '{VALUE} is not valid',
+const studentSchema = new Schema<TStudent, StudentModel>(
+  {
+    id: {
+      type: String,
+      required: true,
+      unique: true,
     },
-    required: true,
+    user: {
+      type: Schema.Types.ObjectId,
+      required: [true, 'User Id is required'],
+      unique: true,
+      ref: 'User',
+    },
+    name: {
+      type: userNameSchema,
+      required: true,
+    },
+    gender: {
+      type: String,
+      enum: {
+        values: ['Male', 'Female'],
+        message: '{VALUE} is not valid',
+      },
+      required: true,
+    },
+    dateOfBirth: { type: Date },
+    email: {
+      type: String,
+      required: true,
+      unique: true,
+      trim: true,
+    },
+    contactNumber: { type: String, required: true, trim: true },
+    emergencyContact: { type: String, required: true, trim: true },
+    bloodGroup: {
+      type: String,
+      enum: ['A+', 'A-', 'B+', 'B-', 'O+', 'O-', 'AB+', 'AB-'],
+    },
+    presentAddress: { type: String, required: true },
+    permanentAddress: { type: String, required: true },
+    guardian: {
+      type: guardianSchema,
+      required: true,
+    },
+    localGuardian: {
+      type: localGuardianSchema,
+      required: true,
+    },
+    profileImage: { type: String },
+    isDeleted: {
+      type: Boolean,
+      default: false,
+    },
+    admissionSemester: {
+      type: Schema.Types.ObjectId,
+      ref: 'AcademicSemester',
+    },
+    academicDepartment: {
+      type: Schema.Types.ObjectId,
+      ref: 'AcademicDepartment',
+    },
   },
-  dateOfBirth: { type: Date },
-  email: {
-    type: String,
-    required: true,
-    unique: true,
-    trim: true,
-  },
-  contactNumber: { type: String, required: true, trim: true },
-  emergencyContact: { type: String, required: true, trim: true },
-  bloodGroup: {
-    type: String,
-    enum: ['A+', 'A-', 'B+', 'B-', 'O+', 'O-', 'AB+', 'AB-'],
-  },
-  presentAddress: { type: String, required: true },
-  permanentAddress: { type: String, required: true },
-  guardian: {
-    type: guardianSchema,
-    required: true,
-  },
-  localGuardian: {
-    type: localGuardianSchema,
-    required: true,
-  },
-  profileImage: { type: String },
-  isDeleted: {
-    type: Boolean,
-    default: false,
-  },
-  admissionSemester:{
-    type:Schema.Types.ObjectId,
-    ref:"AcademicSemester",
-  },
-  academicDepartment:{
-    type:Schema.Types.ObjectId,
-    ref:"AcademicDepartment"
-  }
-},
 
-{
-  toJSON:{
-    virtuals:true
+  {
+    toJSON: {
+      virtuals: true,
+    },
+    timestamps: true,
   },
-  timestamps:true
-});
+);
 
 // mongoose virtual
-studentSchema.virtual("fullName").get(function(){
-  return this?.name?.firstName +" "+ this?.name?.middleName + " " + this?.name?.lastName
-})
-
-
+studentSchema.virtual('fullName').get(function () {
+  return (
+    this?.name?.firstName +
+    ' ' +
+    this?.name?.middleName +
+    ' ' +
+    this?.name?.lastName
+  );
+});
 
 // query middleware
 studentSchema.pre('find', function (next) {

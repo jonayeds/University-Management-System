@@ -79,9 +79,9 @@ const changePassword = async (
   return {};
 };
 
-const refreshToken = async(token: string) => {
+const refreshToken = async (token: string) => {
   // check if the token is valid
-  const decoded = verifyToken(token, config.jwt_refresh_secret as string)
+  const decoded = verifyToken(token, config.jwt_refresh_secret as string);
 
   const { id, iat } = decoded;
 
@@ -112,11 +112,11 @@ const refreshToken = async(token: string) => {
     config.jwt_access_secret as string,
     config.jwt_access_expires_in as string,
   );
-  return {accessToken}
+  return { accessToken };
 };
 
-const forgetPassword = async(id:string)=>{
-    const user = await User.isUserExistsByCustomId(id);
+const forgetPassword = async (id: string) => {
+  const user = await User.isUserExistsByCustomId(id);
   if (!user) {
     throw new AppError(404, 'User not found');
   }
@@ -134,14 +134,16 @@ const forgetPassword = async(id:string)=>{
   const resetToken = createToken(
     jwtPayload,
     config.jwt_access_secret as string,
-    "2m",
+    '2m',
   );
-    const resetUILink = `${config.reset_password_ui_link}/?id=${user.id}&token=${resetToken}`
-    sendEmail(user.email,resetUILink)
+  const resetUILink = `${config.reset_password_ui_link}/?id=${user.id}&token=${resetToken}`;
+  sendEmail(user.email, resetUILink);
+};
 
-}
-
-const resetPassword = async(payload:{id:string, newPassword:string}, token:string)=>{
+const resetPassword = async (
+  payload: { id: string; newPassword: string },
+  token: string,
+) => {
   const user = await User.isUserExistsByCustomId(payload.id);
   if (!user) {
     throw new AppError(404, 'User not found');
@@ -152,9 +154,9 @@ const resetPassword = async(payload:{id:string, newPassword:string}, token:strin
   if (user.isDeleted) {
     throw new AppError(400, 'User is Deleted');
   }
-  const decoded = verifyToken(token, config.jwt_access_secret as string)
-  if(decoded.id !== payload.id){
-    throw new AppError(402, "You are forbidden")
+  const decoded = verifyToken(token, config.jwt_access_secret as string);
+  if (decoded.id !== payload.id) {
+    throw new AppError(402, 'You are forbidden');
   }
   const newHashedPassword = await bcrypt.hash(
     payload.newPassword,
@@ -168,8 +170,7 @@ const resetPassword = async(payload:{id:string, newPassword:string}, token:strin
     },
     { new: true },
   );
-
-}
+};
 
 export const AuthServices = {
   loginUser,

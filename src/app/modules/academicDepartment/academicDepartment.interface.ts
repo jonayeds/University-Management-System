@@ -1,6 +1,6 @@
-import { Types } from "mongoose";
+import { Types } from 'mongoose';
 
-export interface IAcademicDepartment{
-    name:string;
-    academicFaculty:Types.ObjectId;
+export interface IAcademicDepartment {
+  name: string;
+  academicFaculty: Types.ObjectId;
 }

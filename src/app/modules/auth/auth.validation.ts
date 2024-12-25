@@ -1,39 +1,39 @@
-import { z } from "zod";
+import { z } from 'zod';
 
 const loginValidationSchema = z.object({
-    body:z.object({
-        id:z.string({required_error:"Id is Required"}),
-        password:z.string({required_error:"Password is Required"})
-    })
-})
+  body: z.object({
+    id: z.string({ required_error: 'Id is Required' }),
+    password: z.string({ required_error: 'Password is Required' }),
+  }),
+});
 const changePasswordValidationSchema = z.object({
-    body:z.object({
-        oldPassword:z.string({required_error:"Old password is required"}),
-        newPassword:z.string({required_error:"Password is Required"})
-    })
-})
+  body: z.object({
+    oldPassword: z.string({ required_error: 'Old password is required' }),
+    newPassword: z.string({ required_error: 'Password is Required' }),
+  }),
+});
 const refreshTokenValidationSchema = z.object({
-    cookies:z.object({
-        refreshToken : z.string({required_error:"Refresh token is required"})
-    })
-})
+  cookies: z.object({
+    refreshToken: z.string({ required_error: 'Refresh token is required' }),
+  }),
+});
 
 const forgetPasswordValidationSchema = z.object({
-    body:z.object({
-        id:z.string({required_error:"Id is requied"})
-    })
-})
+  body: z.object({
+    id: z.string({ required_error: 'Id is requied' }),
+  }),
+});
 const resetPasswordValidationSchema = z.object({
-    body:z.object({
-        id:z.string({required_error:"Id is requied"}),
-        newPassword:z.string({required_error:"New password is required"})
-    }),
-})
+  body: z.object({
+    id: z.string({ required_error: 'Id is requied' }),
+    newPassword: z.string({ required_error: 'New password is required' }),
+  }),
+});
 
 export const AuthValidations = {
-    loginValidationSchema,
-    changePasswordValidationSchema,
-    refreshTokenValidationSchema,
-    forgetPasswordValidationSchema,
-    resetPasswordValidationSchema
-}
+  loginValidationSchema,
+  changePasswordValidationSchema,
+  refreshTokenValidationSchema,
+  forgetPasswordValidationSchema,
+  resetPasswordValidationSchema,
+};
