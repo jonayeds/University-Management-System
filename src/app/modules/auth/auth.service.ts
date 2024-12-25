@@ -6,6 +6,7 @@ import { JwtPayload } from 'jsonwebtoken';
 import bcrypt from 'bcrypt';
 import { createToken } from './auth.utils';
 import jwt from "jsonwebtoken"
+import { sendEmail } from '../../utils/sendEmail';
 const loginUser = async (payload: ILoginUser) => {
   const user = await User.isUserExistsByCustomId(payload.id);
   if (!user) {
@@ -141,6 +142,7 @@ const forgetPassword = async(id:string)=>{
   );
     const resetUILink = `http://localhost:3000?id=${user.id}&token=${resetToken}`
     console.log(resetUILink)
+    sendEmail()
 
 }
 

@@ -5,6 +5,7 @@ import { User_role } from "./user.constant";
 
 export interface IUser{
     id:string;
+    email:string;
     password:string;
     passwordChangedAt?:Date;
     needsPasswordChange:boolean;

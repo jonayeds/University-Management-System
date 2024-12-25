@@ -22,6 +22,7 @@ const crateStudentIntoDB = async (password: string, payload: TStudent) => {
   userData.password = password || (config.default_password as string);
   // set student role
   userData.role = 'student';
+  userData.email = payload.email;
 
   // find academic semester info
   const admissionSemester = await AcademicSemester.findById(
@@ -67,7 +68,8 @@ const createFacultyIntoDB = async(password:string, payLoad:IFaculty)=>{
   const userData:Partial<IUser> = {}
 
   userData.password = password || (config.default_password as string)
-  userData.role = "faculty"
+  userData.role = "faculty";
+  userData.email = payLoad.email;
 
   const session = await mongoose.startSession()
   try{
@@ -100,6 +102,7 @@ const createAdminIntoDB = async(password:string, payLoad:IAdmin)=>{
 
   userData.password = password || (config.default_password as string)
   userData.role = "admin"
+  userData.email = payLoad.email;
 
   const session = await mongoose.startSession()
   try{
