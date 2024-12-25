@@ -140,9 +140,8 @@ const forgetPassword = async(id:string)=>{
     config.jwt_access_secret as string,
     config.jwt_access_expires_in as string,
   );
-    const resetUILink = `http://localhost:3000?id=${user.id}&token=${resetToken}`
-    console.log(resetUILink)
-    sendEmail()
+    const resetUILink = `${config.reset_password_ui_link}/?id=${user.id}&token=${resetToken}`
+    sendEmail(user.email,resetUILink)
 
 }
 
