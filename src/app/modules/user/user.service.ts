@@ -13,6 +13,7 @@ import { IFaculty } from '../faculty/faculty.interface';
 import { Faculty } from '../faculty/faculty.model';
 import { IAdmin } from '../admin/admin.interface';
 import { Admin } from '../admin/admin.model';
+import { verifyToken } from '../auth/auth.utils';
 
 const crateStudentIntoDB = async (password: string, payload: TStudent) => {
   // create a user object
@@ -130,10 +131,25 @@ const createAdminIntoDB = async(password:string, payLoad:IAdmin)=>{
   }
 }
 
+const getMe = async (token:string)=>{
+  const decoded = verifyToken(token, config.jwt_access_secret as string)
+  const {id, role} = decoded
+  let result = null
+  if(role === "student"){
+    result = await Student.findOne({id})
+  }else if(role === "admin"){
+    result = await Admin.findOne({id})
+  }else if(role === "faculty"){
+    result = await Faculty.findOne({id})
+  } 
+  return result
+}
+
 
 
 export const UserServices = {
   crateStudentIntoDB,
   createFacultyIntoDB,
-  createAdminIntoDB
+  createAdminIntoDB,
+  getMe
 }

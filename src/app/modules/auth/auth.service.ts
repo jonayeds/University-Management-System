@@ -4,7 +4,7 @@ import { User } from '../user/user.model';
 import { ILoginUser } from './auth.interface';
 import { JwtPayload } from 'jsonwebtoken';
 import bcrypt from 'bcrypt';
-import { createToken } from './auth.utils';
+import { createToken, verifyToken } from './auth.utils';
 import jwt from "jsonwebtoken"
 import { sendEmail } from '../../utils/sendEmail';
 const loginUser = async (payload: ILoginUser) => {
@@ -82,10 +82,7 @@ const changePassword = async (
 
 const refreshToken = async(token: string) => {
   // check if the token is valid
-  const decoded = jwt.verify(
-    token,
-    config.jwt_refresh_secret as string,
-  ) as JwtPayload;
+  const decoded = verifyToken(token, config.jwt_refresh_secret as string)
 
   const { id, iat } = decoded;
 
@@ -156,10 +153,7 @@ const resetPassword = async(payload:{id:string, newPassword:string}, token:strin
   if (user.isDeleted) {
     throw new AppError(400, 'User is Deleted');
   }
-  const decoded = jwt.verify(
-    token,
-    config.jwt_access_secret as string,
-  ) as JwtPayload;
+  const decoded = verifyToken(token, config.jwt_access_secret as string)
   if(decoded.id !== payload.id){
     throw new AppError(402, "You are forbidden")
   }
