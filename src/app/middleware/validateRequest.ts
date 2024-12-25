@@ -6,7 +6,8 @@ export const requestValidator = (schema:AnyZodObject)=>{
     return catchAsync(async(req:Request,res:Response,next:NextFunction)=>{
         // validation
         await schema.parseAsync({
-            body:req.body
+            body:req.body,
+            cookies:req.cookies
         })
         next()
 })
