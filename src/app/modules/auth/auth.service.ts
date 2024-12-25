@@ -14,6 +14,9 @@ const loginUser = async (payload: ILoginUser) => {
   if (user.status === 'blocked') {
     throw new AppError(400, 'User is blocked');
   }
+  if (user.isDeleted) {
+    throw new AppError(400, 'User is Deleted');
+  }
   if (!(await User.isPasswordMatched(payload.password, user.password))) {
     throw new AppError(403, 'Your password is wrong');
   }
@@ -50,6 +53,9 @@ const changePassword = async (
   }
   if (currentUser.status === 'blocked') {
     throw new AppError(400, 'User is blocked');
+  }
+  if (user.isDeleted) {
+    throw new AppError(400, 'User is Deleted');
   }
   if (
     !(await User.isPasswordMatched(payload.oldPassword, currentUser.password))
@@ -96,6 +102,9 @@ const refreshToken = async(token: string) => {
   if (user.status === 'blocked') {
     throw new AppError(400, 'User is blocked');
   }
+  if (user.isDeleted) {
+    throw new AppError(400, 'User is Deleted');
+  }
   const jwtPayload = {
     id: user.id,
     role: user.role,
@@ -109,8 +118,35 @@ const refreshToken = async(token: string) => {
   return {accessToken}
 };
 
+const forgetPassword = async(id:string)=>{
+    const user = await User.isUserExistsByCustomId(id);
+  if (!user) {
+    throw new AppError(404, 'User not found');
+  }
+  if (user.status === 'blocked') {
+    throw new AppError(400, 'User is blocked');
+  }
+  if (user.isDeleted) {
+    throw new AppError(400, 'User is Deleted');
+  }
+  const jwtPayload = {
+    id: user.id,
+    role: user.role,
+  };
+
+  const resetToken = createToken(
+    jwtPayload,
+    config.jwt_access_secret as string,
+    config.jwt_access_expires_in as string,
+  );
+    const resetUILink = `http://localhost:3000?id=${user.id}&token=${resetToken}`
+    console.log(resetUILink)
+
+}
+
 export const AuthServices = {
   loginUser,
   changePassword,
   refreshToken,
+  forgetPassword
 };
