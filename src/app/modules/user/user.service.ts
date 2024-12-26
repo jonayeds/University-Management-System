@@ -78,7 +78,7 @@ const crateStudentIntoDB = async (
   }
 };
 
-const createFacultyIntoDB = async (password: string, payLoad: IFaculty) => {
+const createFacultyIntoDB = async (file:any, password: string, payLoad: IFaculty) => {
   const userData: Partial<IUser> = {};
 
   userData.password = password || (config.default_password as string);
@@ -89,13 +89,20 @@ const createFacultyIntoDB = async (password: string, payLoad: IFaculty) => {
   try {
     session.startTransaction();
     userData.id = await generateFacultyId();
+
+    // upload image to clloudinary
+    const imageName = userData.id + payLoad.name.firstName;
+    // send image to cloudinary
+    const image: any = await sendImageToCloudinary(file.path, imageName);
+
+
     const newUser = await User.create([userData], { session });
     if (!newUser.length) {
       throw new AppError(500, 'Failed to create user');
     }
     payLoad.id = newUser[0].id;
     payLoad.user = newUser[0]._id;
-
+    payLoad.profile = image.secure_url
     const newFaculty = await Faculty.create([payLoad], { session });
     if (!newFaculty.length) {
       throw new AppError(500, 'Failed to create Faculty');
@@ -111,7 +118,7 @@ const createFacultyIntoDB = async (password: string, payLoad: IFaculty) => {
   }
 };
 
-const createAdminIntoDB = async (password: string, payLoad: IAdmin) => {
+const createAdminIntoDB = async (file:any, password: string, payLoad: IAdmin) => {
   const userData: Partial<IUser> = {};
 
   userData.password = password || (config.default_password as string);
@@ -122,12 +129,18 @@ const createAdminIntoDB = async (password: string, payLoad: IAdmin) => {
   try {
     session.startTransaction();
     userData.id = await generateAdminId();
+
+    // uploading image to cloudinary
+    const imageName = userData.id + payLoad.name.firstName;
+    const image:any = sendImageToCloudinary(file.path, imageName)
+
     const newUser = await User.create([userData], { session });
     if (!newUser.length) {
       throw new AppError(500, 'Failed to create user');
     }
     payLoad.id = newUser[0].id;
     payLoad.user = newUser[0]._id;
+    payLoad.profile = image.secure_url
 
     const newAdmin = await Admin.create([payLoad], { session });
     if (!newAdmin.length) {
