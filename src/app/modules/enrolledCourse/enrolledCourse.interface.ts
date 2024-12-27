@@ -14,6 +14,7 @@ export interface IEnrolledCourse {
     semesterRegistration:Types.ObjectId;
     academicSemester:Types.ObjectId;
     academicFaculty:Types.ObjectId;
+    academicDepartment:Types.ObjectId;
     offeredCourse:Types.ObjectId;
     course:Types.ObjectId;
     student:Types.ObjectId;

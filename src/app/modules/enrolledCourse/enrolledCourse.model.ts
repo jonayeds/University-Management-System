@@ -34,6 +34,11 @@ const enrolledCourseSchema = new Schema<IEnrolledCourse>({
         ref:"AcademicFaculty",
         required:true
     },
+    academicDepartment:{
+        type:Schema.Types.ObjectId,
+        ref:"AcademicDepartment",
+        required:true
+    },
     academicSemester:{
         type:Schema.Types.ObjectId,
         ref:"AcademicSemester",
@@ -69,12 +74,10 @@ const enrolledCourseSchema = new Schema<IEnrolledCourse>({
     },
     courseMarks:{
         type:courseMarksSchema,
-        required:true
     },
     grade:{
         type:String,
         enum:Grade,
-        required:true
     },
     gradePoints:{
         type:Number,
