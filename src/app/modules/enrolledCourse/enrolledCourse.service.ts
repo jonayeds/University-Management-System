@@ -5,6 +5,7 @@ import { EnrolledCourse } from "./enrolledCourse.model"
 import { Student } from "../student/student.model"
 import { IEnrolledCourse } from "./enrolledCourse.interface"
 import mongoose, { Types } from "mongoose"
+import { SemesterRegistration } from "../semesterRegistration/semesterRegistration.model"
 
 const createEnrolledCourse = async(user:JwtPayload, payload:IEnrolledCourse)=>{
     const {id} = user
@@ -14,8 +15,9 @@ const createEnrolledCourse = async(user:JwtPayload, payload:IEnrolledCourse)=>{
     if(!isOfferedCourseExist){
         throw new AppError(404,"Offered course not found")
     }
+    const {academicDepartment,academicFaculty, academicSemester, semesterRegistration,course, faculty, maxCapacity} = isOfferedCourseExist
     //  check if the student already enrolled
-    const student = await Student.findOne({id})
+    const student = await Student.findOne({id},{_id:1})
     const isStudentAlreadyEnrolled = await EnrolledCourse.findOne({
         student:student?._id,
         semesterRegistration:isOfferedCourseExist.semesterRegistration,
@@ -29,11 +31,44 @@ const createEnrolledCourse = async(user:JwtPayload, payload:IEnrolledCourse)=>{
         throw new AppError(400,"Classroom is full")
     }
 
+    // check if total creadits exceeds max credit
+    const registeredSemester = await SemesterRegistration.findById(semesterRegistration).select("maxCredit")
+    const enrollCourses = await EnrolledCourse.aggregate([
+        {
+            $match:{
+                semesterRegistration,
+                student:student?._id,
+            },
+        },
+        {
+            $lookup:{
+                from:"courses",
+                localField:"course",
+                foreignField:"_id",
+                as:"alreadyEnrolledCourses"
+            }
+        },
+        {
+            $unwind:"$alreadyEnrolledCourses"
+        },
+        {
+            $group:{
+                _id:null, totalEnrolledCredits : {$sum:"$alreadyEnrolledCourses.credits"}
+            }
+        },
+        {
+            $project:{
+                _id:0,
+                totalEnrolledCredits:1
+            }
+        }
+    ])
+    // console.log(enrollCourses[0].totalEnrolledCredits)
+
     const session = await mongoose.startSession()
     try {
         session.startTransaction()
         // creating An enrolled course
-    const {academicDepartment,academicFaculty, academicSemester, semesterRegistration,course, faculty, maxCapacity} = isOfferedCourseExist
     payload.student = student?._id as Types.ObjectId
     const result = await EnrolledCourse.create({
         student:payload.student,
