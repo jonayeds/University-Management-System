@@ -6,6 +6,7 @@ import { Student } from "../student/student.model"
 import { IEnrolledCourse } from "./enrolledCourse.interface"
 import mongoose, { Types } from "mongoose"
 import { SemesterRegistration } from "../semesterRegistration/semesterRegistration.model"
+import { Course } from "../course/course.model"
 
 const createEnrolledCourse = async(user:JwtPayload, payload:IEnrolledCourse)=>{
     const {id} = user
@@ -63,7 +64,12 @@ const createEnrolledCourse = async(user:JwtPayload, payload:IEnrolledCourse)=>{
             }
         }
     ])
-    // console.log(enrollCourses[0].totalEnrolledCredits)
+    const enrolledCourse = await Course.findById(course).select("credits")
+    const totalCredits = enrollCourses.length>0? enrollCourses[0].totalEnrolledCredits : 0
+    if(totalCredits && registeredSemester?.maxCredit && totalCredits+enrolledCourse?.credits > registeredSemester?.maxCredit  ){
+        throw new AppError(400, "You have excided maximmum number of credits")
+    }
+
 
     const session = await mongoose.startSession()
     try {
