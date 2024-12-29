@@ -13,6 +13,18 @@ const createEnrolledCourse = catchAsync(async (req,res)=>{
     })
 })
 
+const updateEnrolledCourseMarks = catchAsync(async (req, res)=>{
+    const faculty  = req.query.user as JwtPayload
+    const result = await EnrolledCourseServices.updateCourseMarks(faculty?.id as string, req.body)
+    response(res, {
+        success:true,
+        statusCode:200,
+        message:"Successfully updated course marks",
+        data:result
+    })
+})
+
 export const EnrolledCourseControllers = {
-    createEnrolledCourse
+    createEnrolledCourse,
+    updateEnrolledCourseMarks
 }

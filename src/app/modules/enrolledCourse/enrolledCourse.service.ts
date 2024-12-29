@@ -3,10 +3,11 @@ import { OfferedCourse } from "../offeredCourse/offeredCourse.model"
 import { AppError } from "../../errors/appError"
 import { EnrolledCourse } from "./enrolledCourse.model"
 import { Student } from "../student/student.model"
-import { IEnrolledCourse } from "./enrolledCourse.interface"
+import {  IEnrolledCourse } from "./enrolledCourse.interface"
 import mongoose, { Types } from "mongoose"
 import { SemesterRegistration } from "../semesterRegistration/semesterRegistration.model"
 import { Course } from "../course/course.model"
+import { Faculty } from "../faculty/faculty.model"
 
 const createEnrolledCourse = async(user:JwtPayload, payload:IEnrolledCourse)=>{
     const {id} = user
@@ -107,6 +108,41 @@ const createEnrolledCourse = async(user:JwtPayload, payload:IEnrolledCourse)=>{
     
 }
 
+const updateCourseMarks = async(facultyId:string, payload:Partial<IEnrolledCourse>)=>{
+    const {semesterRegistration, offeredCourse, student, courseMarks} = payload
+    const isEnrolledCourseExist = await EnrolledCourse.findOne({
+        semesterRegistration,
+        student,
+        offeredCourse
+    })
+    if(!isEnrolledCourseExist){
+        throw new AppError(404,"Enrolled course not found")
+    }
+    const faculty = await Faculty.findOne({id:facultyId}).select("_id")
+    if(faculty?._id.toString() !== isEnrolledCourseExist.faculty.toString()){
+        throw new AppError(403, "You are not authorized to update course marks")
+    }
+
+    
+    const modifiedData: Record<string, unknown>= {}
+    if(courseMarks && Object.keys(courseMarks).length){
+        for(const [key,value] of Object.entries(courseMarks)){
+            modifiedData[`courseMarks.${key}`] = value
+        }
+    }
+    
+    if(courseMarks?.finalTerm){
+        modifiedData.isCompleted = true
+        const { classTest1, midTerm, classTest2} = isEnrolledCourseExist.courseMarks
+        const totalMarks = (courseMarks.classTest1 ||classTest1)+ (courseMarks?.midTerm || midTerm)+ (courseMarks.classTest2 || classTest2) + courseMarks.finalTerm
+
+    }
+
+    // const result  = await EnrolledCourse.findByIdAndUpdate(isEnrolledCourseExist._id, modifiedData, {new :true})
+    return {}
+}
+
 export const EnrolledCourseServices = {
-    createEnrolledCourse
+    createEnrolledCourse,
+    updateCourseMarks
 }
