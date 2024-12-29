@@ -8,6 +8,7 @@ import mongoose, { Types } from "mongoose"
 import { SemesterRegistration } from "../semesterRegistration/semesterRegistration.model"
 import { Course } from "../course/course.model"
 import { Faculty } from "../faculty/faculty.model"
+import { calculateGradePoints } from "./enrolledCourse.utils"
 
 const createEnrolledCourse = async(user:JwtPayload, payload:IEnrolledCourse)=>{
     const {id} = user
@@ -132,14 +133,16 @@ const updateCourseMarks = async(facultyId:string, payload:Partial<IEnrolledCours
     }
     
     if(courseMarks?.finalTerm){
-        modifiedData.isCompleted = true
         const { classTest1, midTerm, classTest2} = isEnrolledCourseExist.courseMarks
         const totalMarks = (courseMarks.classTest1 ||classTest1)+ (courseMarks?.midTerm || midTerm)+ (courseMarks.classTest2 || classTest2) + courseMarks.finalTerm
-
+        const {grade, gradePoints} = calculateGradePoints(totalMarks)
+        modifiedData.grade = grade
+        modifiedData.gradePoints = gradePoints
+        modifiedData.isCompleted = true
     }
 
-    // const result  = await EnrolledCourse.findByIdAndUpdate(isEnrolledCourseExist._id, modifiedData, {new :true})
-    return {}
+    const result  = await EnrolledCourse.findByIdAndUpdate(isEnrolledCourseExist._id, modifiedData, {new :true})
+    return result
 }
 
 export const EnrolledCourseServices = {
