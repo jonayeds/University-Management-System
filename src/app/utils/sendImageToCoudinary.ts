@@ -12,6 +12,7 @@ export const sendImageToCloudinary = async (
   fileName: string,
 ) => {
   return new Promise((resolve, reject) => {
+    // console.log("hit")
     cloudinary.uploader.upload(
       filePath,
       {

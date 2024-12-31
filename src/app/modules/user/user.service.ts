@@ -27,7 +27,6 @@ const crateStudentIntoDB = async (
 ) => {
   // create a user object
   const userData: Partial<IUser> = {};
-
   // if password is not given, using default password
   userData.password = password || (config.default_password as string);
   // set student role
@@ -38,15 +37,19 @@ const crateStudentIntoDB = async (
   const admissionSemester = await AcademicSemester.findById(
     payload.admissionSemester,
   );
-
+  if(!admissionSemester){
+    throw new AppError(404, "Admission semester not found")
+  }
   const session = await mongoose.startSession();
   try {
     session.startTransaction();
     // set generated id
+
     userData.id = await generateStudentId(
       admissionSemester as IAcademicSemester,
     );
     const imageName = userData.id + payload.name.firstName;
+
     // send image to cloudinary
     const image: any = await sendImageToCloudinary(file.path, imageName);
 
