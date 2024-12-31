@@ -44,14 +44,17 @@ const crateStudentIntoDB = async (
   try {
     session.startTransaction();
     // set generated id
-
     userData.id = await generateStudentId(
       admissionSemester as IAcademicSemester,
     );
-    const imageName = userData.id + payload.name.firstName;
+
+    if(file){
+      const imageName = userData.id + payload.name.firstName;
 
     // send image to cloudinary
     const image: any = await sendImageToCloudinary(file.path, imageName);
+    payload.profileImage = image.secure_url;
+    }
 
     // create a user (transection-1)
     const newUser = await User.create([userData], { session });
@@ -63,7 +66,7 @@ const crateStudentIntoDB = async (
     // set id and _id as user
     payload.id = newUser[0].id;
     payload.user = newUser[0]._id;
-    payload.profileImage = image.secure_url;
+
 
     // create a student (Transection-2)
     const newStudent = await Student.create([payload], { session });
@@ -93,11 +96,14 @@ const createFacultyIntoDB = async (file:any, password: string, payLoad: IFaculty
     session.startTransaction();
     userData.id = await generateFacultyId();
 
-    // upload image to clloudinary
+    if(file){
+      // upload image to clloudinary
     const imageName = userData.id + payLoad.name.firstName;
     // send image to cloudinary
     const image: any = await sendImageToCloudinary(file.path, imageName);
-
+    payLoad.profile = image.secure_url
+    }
+    
 
     const newUser = await User.create([userData], { session });
     if (!newUser.length) {
@@ -105,7 +111,7 @@ const createFacultyIntoDB = async (file:any, password: string, payLoad: IFaculty
     }
     payLoad.id = newUser[0].id;
     payLoad.user = newUser[0]._id;
-    payLoad.profile = image.secure_url
+
     const newFaculty = await Faculty.create([payLoad], { session });
     if (!newFaculty.length) {
       throw new AppError(500, 'Failed to create Faculty');
@@ -133,9 +139,13 @@ const createAdminIntoDB = async (file:any, password: string, payLoad: IAdmin) =>
     session.startTransaction();
     userData.id = await generateAdminId();
 
-    // uploading image to cloudinary
+    if(file){
+      // upload image to clloudinary
     const imageName = userData.id + payLoad.name.firstName;
-    const image:any = sendImageToCloudinary(file.path, imageName)
+    // send image to cloudinary
+    const image: any = await sendImageToCloudinary(file.path, imageName);
+    payLoad.profile = image.secure_url
+    }
 
     const newUser = await User.create([userData], { session });
     if (!newUser.length) {
@@ -143,7 +153,6 @@ const createAdminIntoDB = async (file:any, password: string, payLoad: IAdmin) =>
     }
     payLoad.id = newUser[0].id;
     payLoad.user = newUser[0]._id;
-    payLoad.profile = image.secure_url
 
     const newAdmin = await Admin.create([payLoad], { session });
     if (!newAdmin.length) {
