@@ -19,6 +19,7 @@ import { IAdmin } from '../admin/admin.interface';
 import { Admin } from '../admin/admin.model';
 import { JwtPayload } from 'jsonwebtoken';
 import { sendImageToCloudinary } from '../../utils/sendImageToCoudinary';
+import { AcademicDepartment } from '../academicDepartment/academicDepartment.model';
 
 const crateStudentIntoDB = async (
   file: any,
@@ -40,6 +41,10 @@ const crateStudentIntoDB = async (
   if(!admissionSemester){
     throw new AppError(404, "Admission semester not found")
   }
+  const academicDepartment = await AcademicDepartment.findById(payload.academicDepartment)
+  if(!academicDepartment){
+    throw new AppError(404, "Academic Department not found")
+  }
   const session = await mongoose.startSession();
   try {
     session.startTransaction();
@@ -47,7 +52,6 @@ const crateStudentIntoDB = async (
     userData.id = await generateStudentId(
       admissionSemester as IAcademicSemester,
     );
-
     if(file){
       const imageName = userData.id + payload.name.firstName;
 
@@ -66,8 +70,7 @@ const crateStudentIntoDB = async (
     // set id and _id as user
     payload.id = newUser[0].id;
     payload.user = newUser[0]._id;
-
-
+    payload.academicFaculty = academicDepartment.academicFaculty
     // create a student (Transection-2)
     const newStudent = await Student.create([payload], { session });
     if (!newStudent.length) {
