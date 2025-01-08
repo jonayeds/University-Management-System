@@ -9,7 +9,7 @@ export const StudentRoutes = express.Router();
 // will call the controllers
 StudentRoutes.get(
   '/',
-  auth(User_role.admin, User_role.faculty),
+  auth(User_role.admin, User_role.faculty, User_role.superAdmin),
   studentControllers.getAllStudents,
 );
 StudentRoutes.get(
