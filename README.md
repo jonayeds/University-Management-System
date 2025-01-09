@@ -1,1 +1,1 @@
-# University managemnt system (Development on going)
+# University managemnt system 
